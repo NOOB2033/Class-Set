@@ -1,9 +1,12 @@
 #include"Set.h"
 
 
-Set::Set() :BoolVector(256, 0)
+Set::Set(int value) :BoolVector(256, value)
 {
-	power_ = 0;
+	if (value)
+		power_ = 256;
+	else
+		power_ = 0;
 }
 
 
@@ -25,17 +28,19 @@ Set::~Set()
 {}
 
 
-std::istream& operator>>(std::istream& in, const Set& set)
+std::istream& operator>>(std::istream& in, Set& set)
 {
 	char symbol;
 	for (; (symbol = getchar()) != '\n';) {
 		int byte = symbol / set.BYTE;
 		unsigned char mask = (128 >> symbol % set.BYTE);
+		if (!(set.bv_[byte] & mask))
+			set.power_++;
 		set.bv_[byte] |= mask;
 	}
 	int byte = symbol / set.BYTE; // for \ n
 	unsigned char mask = (128 >> symbol % set.BYTE);
-	set.bv_[byte] |= mask;
+	set.power_++;
 	return in;
 }
 
@@ -61,21 +66,25 @@ bool Set::find(char symbol)
 }
 
 
-char Set::min()
+bool Set::min(char& symbol)
 {
 	for (int i = 0; i < len_; i++)
-		if (getBit(i))
-			return (char)i;
-	std::cout << "Min not found";
+		if (getBit(i)) {
+			symbol = i;
+			return true;
+		}
+	return false;
 }
 
 
-char Set::max()
+bool Set::max(char& symbol)
 {
 	for (int i = len_ - 1; i >= 0; i--)
-		if (getBit(i))
-			return (char)i;
-	std::cout << "Max not found";
+		if (getBit(i)) {
+			symbol = i;
+			return true;
+		}
+	return false;
 }
 
 
