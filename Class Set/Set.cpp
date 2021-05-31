@@ -40,6 +40,7 @@ std::istream& operator>>(std::istream& in, Set& set)
 	}
 	int byte = symbol / set.BYTE; // for \ n
 	unsigned char mask = (128 >> symbol % set.BYTE);
+	set.bv_[byte] |= mask;
 	set.power_++;
 	return in;
 }
